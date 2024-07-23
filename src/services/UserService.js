@@ -25,7 +25,7 @@ const createUser = (newUser) => {
             if (createUser) {
                 resolve({
                     status: 'ok',
-                    message: 'success',
+                    message: 'Create success',
                     data: createUser,
                 });
             }
@@ -68,7 +68,7 @@ const loginUser = (userLogin) => {
             });
             resolve({
                 status: 'ok',
-                message: 'success',
+                message: 'Login success',
                 access_token,
                 refresh_token,
             });
@@ -83,7 +83,6 @@ const updateUser = (id, data) => {
             const checkUser = await User.findOne({
                 _id: id,
             });
-            // console.log('checkuser', checkUser);
             if (checkUser === null) {
                 resolve({
                     status: 'ok',
@@ -93,11 +92,68 @@ const updateUser = (id, data) => {
             const updatedUser = await User.findByIdAndUpdate(id, data, {
                 new: true,
             });
-            // console.log('updateUser', updatedUser);
             resolve({
                 status: 'ok',
-                message: 'success',
+                message: 'Update success',
                 updatedUser,
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+const deleteUser = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const checkUser = await User.findOne({
+                _id: id,
+            });
+            if (checkUser === null) {
+                resolve({
+                    status: 'ok',
+                    message: 'the user is not defined!',
+                });
+            }
+            await User.findByIdAndDelete(id);
+            resolve({
+                status: 'ok',
+                message: 'Delete success',
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+const getAllUser = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const allUser = await User.find();
+            resolve({
+                status: 'ok',
+                message: 'Get all success',
+                data: allUser,
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+const getDetailsUser = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const user = await User.findOne({
+                _id: id,
+            });
+            if (user === null) {
+                resolve({
+                    status: 'ok',
+                    message: 'the user is not defined!',
+                });
+            }
+            resolve({
+                status: 'ok',
+                message: 'Get details success',
+                data: user,
             });
         } catch (e) {
             reject(e);
@@ -108,4 +164,7 @@ module.exports = {
     createUser,
     loginUser,
     updateUser,
+    deleteUser,
+    getAllUser,
+    getDetailsUser,
 };
