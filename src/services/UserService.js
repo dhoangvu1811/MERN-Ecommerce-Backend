@@ -1,9 +1,9 @@
 const User = require('../models/UserModel');
 const bcrypt = require('bcrypt');
 const { genneralAccessToken, genneralRefreshToken } = require('./jwtService');
-const createUser = (newUser) => {
+const createUserService = (newUser) => {
     return new Promise(async (resolve, reject) => {
-        const { name, email, password, confirmPassword, phone } = newUser;
+        const { name, email, password, phone } = newUser;
 
         try {
             const checkUser = await User.findOne({
@@ -34,7 +34,7 @@ const createUser = (newUser) => {
         }
     });
 };
-const loginUser = (userLogin) => {
+const loginUserService = (userLogin) => {
     return new Promise(async (resolve, reject) => {
         const { name, email, password, confirmPassword, phone } = userLogin;
         try {
@@ -58,11 +58,11 @@ const loginUser = (userLogin) => {
                     message: 'the password or user is incorrect!',
                 });
             }
-            const access_token = await genneralAccessToken({
+            const access_token = genneralAccessToken({
                 id: checkUser.id,
                 isAdmin: checkUser.isAdmin,
             });
-            const refresh_token = await genneralRefreshToken({
+            const refresh_token = genneralRefreshToken({
                 id: checkUser.id,
                 isAdmin: checkUser.isAdmin,
             });
@@ -77,7 +77,7 @@ const loginUser = (userLogin) => {
         }
     });
 };
-const updateUser = (id, data) => {
+const updateUserService = (id, data) => {
     return new Promise(async (resolve, reject) => {
         try {
             const checkUser = await User.findOne({
@@ -102,7 +102,7 @@ const updateUser = (id, data) => {
         }
     });
 };
-const deleteUser = (id) => {
+const deleteUserService = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
             const checkUser = await User.findOne({
@@ -124,7 +124,7 @@ const deleteUser = (id) => {
         }
     });
 };
-const getAllUser = () => {
+const getAllUserService = () => {
     return new Promise(async (resolve, reject) => {
         try {
             const allUser = await User.find();
@@ -138,7 +138,7 @@ const getAllUser = () => {
         }
     });
 };
-const getDetailsUser = (id) => {
+const getDetailsUserService = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
             const user = await User.findOne({
@@ -161,10 +161,10 @@ const getDetailsUser = (id) => {
     });
 };
 module.exports = {
-    createUser,
-    loginUser,
-    updateUser,
-    deleteUser,
-    getAllUser,
-    getDetailsUser,
+    createUserService,
+    loginUserService,
+    updateUserService,
+    deleteUserService,
+    getAllUserService,
+    getDetailsUserService,
 };
