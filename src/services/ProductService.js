@@ -103,13 +103,56 @@ const deleteProductService = (id) => {
         }
     });
 };
-const getAllProductService = () => {
+const getAllProductService = (limit, page, sort, filter) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const allProduct = await Product.find();
+            //đếm số lượng product
+            const totalProduct = await Product.countDocuments();
+            if (filter) {
+                const label = filter[0];
+                //tìm kiếm theo biểu thức chính quy của filter[1] và giới hạn product trên 1 trang và bỏ qua product trước nó
+                const allProductFilter = await Product.find({
+                    [label]: { $regex: filter[1] },
+                })
+                    .limit(limit)
+                    .skip(page * limit);
+                resolve({
+                    status: 'ok',
+                    message: 'Get all product success',
+                    total: totalProduct,
+                    pageCurrent: Number(page + 1),
+                    totalPage: Math.ceil(totalProduct / limit),
+                    data: allProductFilter,
+                });
+            }
+            if (sort) {
+                //sắp xếp product theo giá trị của sort và bỏ qua product trước nó
+                const objectSort = { [sort[1]]: sort[0] };
+                const allProductSort = await Product.find()
+                    .limit(limit)
+                    .skip(page * limit)
+                    .sort(objectSort);
+                resolve({
+                    status: 'ok',
+                    message: 'Get all product success',
+                    total: totalProduct,
+                    pageCurrent: Number(page + 1),
+                    //tính tổng số trang dựa vào tổng số product và số lượng product trên 1 trang (limit) làm tròn lên
+                    totalPage: Math.ceil(totalProduct / limit),
+                    data: allProductSort,
+                });
+            }
+            //giới hạn product trên 1 trang và bỏ qua product trước nó
+            const allProduct = await Product.find()
+                .limit(limit)
+                .skip(page * limit);
             resolve({
                 status: 'ok',
                 message: 'Get all product success',
+                total: totalProduct,
+                pageCurrent: Number(page + 1),
+                //tính tổng số trang dựa vào tổng số product và số lượng product trên 1 trang (limit) làm tròn lên
+                totalPage: Math.ceil(totalProduct / limit),
                 data: allProduct,
             });
         } catch (e) {
