@@ -7,7 +7,7 @@ const genneralAccessToken = (payload) => {
             payload,
         },
         process.env.ACCESS_TOKEN,
-        { expiresIn: '1m' }
+        { expiresIn: '2m' }
     );
     return access_token;
 };
@@ -27,18 +27,19 @@ const refreshTokenService = (token) => {
             jwt.verify(token, process.env.REFRESH_TOKEN, (err, user) => {
                 if (err) {
                     resolve({
-                        status: 'ERROR',
-                        message: 'The authentication',
+                        status: 'error',
+                        message: 'Token không hợp lệ',
                     });
                 }
+                //lấy thông tin từ payload của refreshToken để tạo mới accessToken
                 const { payload } = user;
                 const access_token = genneralAccessToken({
                     id: payload?.id,
                     isAdmin: payload?.isAdmin,
                 });
                 resolve({
-                    status: 'ok',
-                    message: 'Get details success',
+                    status: 'success',
+                    message: 'Tạo mới token thành công',
                     access_token,
                 });
             });
