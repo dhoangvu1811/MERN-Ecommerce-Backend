@@ -67,10 +67,17 @@ const loginUser = async (req, res) => {
         }
 
         const response = await UserService.loginUserService(req.body);
+        // Xóa refresh_token khỏi response trước khi trả về client
+        const { refresh_token, ...newResponse } = response;
+        // Set cookie refresh_token
+        res.cookie('refresh_token', refresh_token, {
+            httpOnly: true,
+            secure: true,
+        });
         if (response.status === 'error') {
             return res.status(400).json(response);
         }
-        return res.status(200).json(response);
+        return res.status(200).json(newResponse);
     } catch (error) {
         console.error(error);
         return res.status(500).json({
@@ -145,7 +152,7 @@ const getDetailsUser = async (req, res) => {
         //lấy tham số được truyền trong URL của request
         const userId = req.params.id;
         if (!userId) {
-            return res.status(200).json({
+            return res.status(400).json({
                 status: 'error',
                 message: 'ID người dùng là bắt buộc!',
             });
@@ -164,11 +171,13 @@ const getDetailsUser = async (req, res) => {
     }
 };
 const refreshToken = async (req, res) => {
+    // console.log('req.cookies', req.headers.cookie);
     try {
         //lấy token từ header của request và kiểm tra xem token có tồn tại không
-        const token = req.headers.token.split(' ')[1];
+        const token = req.headers.cookie.split('=')[1];
+        console.log('token', token);
         if (!token) {
-            return res.status(200).json({
+            return res.status(400).json({
                 status: 'error',
                 message: 'Token bắt buộc!',
             });

@@ -4,6 +4,7 @@ const { default: mongoose } = require('mongoose');
 const routes = require('./routes');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const cookiePaser = require('cookie-parser');
 dotenv.config();
 
 const app = express();
@@ -11,6 +12,8 @@ const port = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(cookiePaser());
+
 routes(app);
 //kết nối csdl
 mongoose

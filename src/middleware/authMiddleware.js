@@ -11,8 +11,7 @@ const authMiddleware = (req, res, next) => {
                 status: 'error',
             });
         }
-        const { payload } = user;
-        if (payload?.isAdmin) {
+        if (user?.isAdmin) {
             //nếu có quyền admin thì request được đi tiếp
             next();
         } else {
@@ -34,9 +33,8 @@ const authUserMiddleware = (req, res, next) => {
                 status: 'error',
             });
         }
-        const { payload } = user;
-        if (payload?.isAdmin || payload?.id === userId) {
-            //nếu có quyền admin thì request được đi tiếp
+        if (user?.id === userId || user?.isAdmin) {
+            //nếu có quyền admin thì request được đi tiếp hoặc id người dùng trùng với id trong token
             next();
         } else {
             return res.status(404).json({
