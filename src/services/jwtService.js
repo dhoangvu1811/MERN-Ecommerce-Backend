@@ -7,7 +7,7 @@ const genneralAccessToken = (payload) => {
             ...payload,
         },
         process.env.ACCESS_TOKEN,
-        { expiresIn: '2m' }
+        { expiresIn: '30s' }
     );
     return access_token;
 };
@@ -32,10 +32,9 @@ const refreshTokenService = (token) => {
                     });
                 }
                 //lấy thông tin từ payload của refreshToken để tạo mới accessToken
-                const { payload } = user;
                 const access_token = genneralAccessToken({
-                    id: payload?.id,
-                    isAdmin: payload?.isAdmin,
+                    id: user?.id,
+                    isAdmin: user?.isAdmin,
                 });
                 resolve({
                     status: 'success',

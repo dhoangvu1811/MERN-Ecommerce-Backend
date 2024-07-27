@@ -171,11 +171,10 @@ const getDetailsUser = async (req, res) => {
     }
 };
 const refreshToken = async (req, res) => {
-    // console.log('req.cookies', req.headers.cookie);
+    // console.log('req.cookies', req.headers);
     try {
         //lấy token từ header của request và kiểm tra xem token có tồn tại không
         const token = req.headers.cookie.split('=')[1];
-        console.log('token', token);
         if (!token) {
             return res.status(400).json({
                 status: 'error',
@@ -192,6 +191,19 @@ const refreshToken = async (req, res) => {
         });
     }
 };
+const logoutUser = async (req, res) => {
+    try {
+        res.clearCookie('refresh_token');
+        return res.status(200).json({
+            status: 'success',
+            message: 'Đăng xuất thành công',
+        });
+    } catch (e) {
+        return res.status(404).json({
+            message: e,
+        });
+    }
+};
 module.exports = {
     createUser,
     loginUser,
@@ -200,4 +212,5 @@ module.exports = {
     getAllUser,
     getDetailsUser,
     refreshToken,
+    logoutUser,
 };

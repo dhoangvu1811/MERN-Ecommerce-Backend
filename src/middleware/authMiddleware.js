@@ -28,7 +28,7 @@ const authUserMiddleware = (req, res, next) => {
     const userId = req.params.id;
     jwt.verify(token, process.env.ACCESS_TOKEN, function (err, user) {
         if (err) {
-            return res.status(404).json({
+            return res.status(401).json({
                 message: 'Lỗi xác thực',
                 status: 'error',
             });
