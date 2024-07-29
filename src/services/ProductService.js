@@ -1,7 +1,16 @@
 const Product = require('../models/ProductModel');
 const createProductService = async (newProduct) => {
-    const { name, image, type, countInStock, price, rating, description } =
-        newProduct;
+    const {
+        name,
+        image,
+        type,
+        countInStock,
+        price,
+        rating,
+        description,
+        selled,
+        discount,
+    } = newProduct;
     try {
         // kiểm tra sản phẩm đã tồn tại chưa
         const checkProduct = await Product.findOne({
@@ -23,6 +32,8 @@ const createProductService = async (newProduct) => {
             price,
             rating,
             description,
+            selled,
+            discount,
         });
 
         //trả về thông báo khi tạo sản phẩm thành công

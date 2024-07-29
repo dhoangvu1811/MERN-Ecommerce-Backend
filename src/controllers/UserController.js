@@ -91,6 +91,13 @@ const updateUser = async (req, res) => {
         //lấy tham số được truyền trong URL của request và dữ liệu được truyền trong body của request
         const userId = req.params.id;
         const data = req.body;
+        const { email, name, address, phone, image } = data;
+        if (!email || !name || !address || !phone || !image) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Vui lòng nhập đầy đủ thông tin',
+            });
+        }
 
         if (!userId) {
             return res.status(400).json({

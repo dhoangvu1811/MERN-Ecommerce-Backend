@@ -1,11 +1,30 @@
 const ProductService = require('../services/ProductService');
 const createProduct = async (req, res) => {
     try {
-        const { name, image, type, countInStock, price, rating, description } =
-            req.body;
+        const {
+            name,
+            image,
+            type,
+            countInStock,
+            price,
+            rating,
+            description,
+            selled,
+            discount,
+        } = req.body;
 
         //kiểm tra xem các trường có được nhập không
-        if (!name || !image || !type || !countInStock || !price || !rating) {
+        if (
+            !name ||
+            !image ||
+            !type ||
+            !countInStock ||
+            !price ||
+            !rating ||
+            // !selled ||
+            // !discount ||
+            !description
+        ) {
             return res.status(400).json({
                 status: 'error',
                 message: 'Vui lòng nhập đầy đủ thông tin',
@@ -112,7 +131,7 @@ const getAllProduct = async (req, res) => {
 
         //gọi hàm getAllProductService từ ProductService để lấy danh sách sản phẩm
         const response = await ProductService.getAllProductService(
-            Number(limit) || 8,
+            Number(limit) || 10,
             Number(page) || 0,
             sort,
             filter
