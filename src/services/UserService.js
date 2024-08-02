@@ -185,6 +185,21 @@ const getDetailsUserService = async (id) => {
         };
     }
 };
+const deleteManyUserService = async (ids) => {
+    try {
+        //xóa người dùng theo id
+        await User.deleteMany({ _id: ids });
+        return {
+            status: 'success',
+            message: 'Xóa người dùng tuỳ chọn thành công!',
+        };
+    } catch (e) {
+        return {
+            status: 'error',
+            message: e.message,
+        };
+    }
+};
 module.exports = {
     createUserService,
     loginUserService,
@@ -192,4 +207,5 @@ module.exports = {
     deleteUserService,
     getAllUserService,
     getDetailsUserService,
+    deleteManyUserService,
 };

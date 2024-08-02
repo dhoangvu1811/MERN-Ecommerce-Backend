@@ -176,18 +176,44 @@ const getAllProductService = async (limit, page, sort, filter) => {
                 data: allProductSort,
             };
         }
-        //giới hạn product trên 1 trang và bỏ qua product trước nó
-        const allProduct = await Product.find()
-            .limit(limit)
-            .skip(page * limit);
+        if (limit) {
+            //giới hạn product trên 1 trang và bỏ qua product trước nó
+            const allProduct = await Product.find()
+                .limit(limit)
+                .skip(page * limit);
+            return {
+                status: 'success',
+                message: 'lấy danh sách sản phẩm thành công',
+                total: totalProduct,
+                pageCurrent: Number(page + 1),
+                //tính tổng số trang dựa vào tổng số product và số lượng product trên 1 trang (limit) làm tròn lên
+                totalPage: Math.ceil(totalProduct / limit),
+                data: allProduct,
+            };
+        }
+
+        //lấy tất cả product
+        const allProduct = await Product.find();
         return {
             status: 'success',
             message: 'lấy danh sách sản phẩm thành công',
             total: totalProduct,
-            pageCurrent: Number(page + 1),
-            //tính tổng số trang dựa vào tổng số product và số lượng product trên 1 trang (limit) làm tròn lên
-            totalPage: Math.ceil(totalProduct / limit),
             data: allProduct,
+        };
+    } catch (e) {
+        return {
+            status: 'error',
+            message: e.message,
+        };
+    }
+};
+const deleteManyProductService = async (productIds) => {
+    try {
+        //xóa sản phẩm
+        await Product.deleteMany({ _id: productIds });
+        return {
+            status: 'success',
+            message: 'Xóa sản phẩm tuỳ chọn thành công',
         };
     } catch (e) {
         return {
@@ -202,4 +228,5 @@ module.exports = {
     getDetailsProductService,
     deleteProductService,
     getAllProductService,
+    deleteManyProductService,
 };

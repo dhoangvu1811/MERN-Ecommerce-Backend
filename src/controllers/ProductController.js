@@ -144,10 +144,37 @@ const getAllProduct = async (req, res) => {
         });
     }
 };
+const deleteManyProduct = async (req, res) => {
+    try {
+        //lấy tham số được truyền trong URL của request
+        const productIds = req.body.ids;
+        if (!productIds) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'ProductId là bắt buộc!',
+            });
+        }
+
+        //gọi hàm deleteProductService từ ProductService để xóa sản phẩm
+        const response = await ProductService.deleteManyProductService(
+            productIds
+        );
+        if (response.status === 'error') {
+            return res.status(400).json(response);
+        }
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            status: 'error',
+            message: e,
+        });
+    }
+};
 module.exports = {
     createProduct,
     updateProduct,
     getDetailProduct,
     deleteProduct,
     getAllProduct,
+    deleteManyProduct,
 };

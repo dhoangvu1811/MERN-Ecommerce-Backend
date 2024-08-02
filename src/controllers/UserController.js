@@ -211,6 +211,30 @@ const logoutUser = async (req, res) => {
         });
     }
 };
+const deleteManyUser = async (req, res) => {
+    try {
+        //lấy tham số được truyền trong URL của request
+        const userIds = req.body.ids;
+        if (!userIds) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'ID người dùng là bắt buộc!',
+            });
+        }
+
+        // Gọi deleteUserService để xóa người dùng
+        const response = await UserService.deleteManyUserService(userIds);
+        if (response.status === 'error') {
+            return res.status(400).json(response);
+        }
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(500).json({
+            status: 'error',
+            message: e.message,
+        });
+    }
+};
 module.exports = {
     createUser,
     loginUser,
@@ -220,4 +244,5 @@ module.exports = {
     getDetailsUser,
     refreshToken,
     logoutUser,
+    deleteManyUser,
 };
