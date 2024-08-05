@@ -22,7 +22,7 @@ const createProduct = async (req, res) => {
             !price ||
             !rating ||
             // !selled ||
-            // !discount ||
+            !discount ||
             !description
         ) {
             return res.status(400).json({
@@ -170,6 +170,17 @@ const deleteManyProduct = async (req, res) => {
         });
     }
 };
+const getAllType = async (req, res) => {
+    try {
+        const response = await ProductService.getAllType();
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(500).json({
+            status: 'error',
+            message: e,
+        });
+    }
+};
 module.exports = {
     createProduct,
     updateProduct,
@@ -177,4 +188,5 @@ module.exports = {
     deleteProduct,
     getAllProduct,
     deleteManyProduct,
+    getAllType,
 };

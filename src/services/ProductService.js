@@ -23,7 +23,7 @@ const createProductService = async (newProduct) => {
             };
         }
 
-        //tạo sản phẩm mới
+        // tạo sản phẩm mới
         const createProduct = await Product.create({
             name,
             image,
@@ -36,7 +36,7 @@ const createProductService = async (newProduct) => {
             discount,
         });
 
-        //trả về thông báo khi tạo sản phẩm thành công
+        // trả về thông báo khi tạo sản phẩm thành công
         if (createProduct) {
             return {
                 status: 'success',
@@ -222,6 +222,21 @@ const deleteManyProductService = async (productIds) => {
         };
     }
 };
+const getAllType = async () => {
+    try {
+        const allTypeProduct = await Product.distinct('type');
+        return {
+            status: 'success',
+            message: 'lấy danh sách các loại sản phẩm thành công',
+            data: allTypeProduct,
+        };
+    } catch (e) {
+        return {
+            status: 'error',
+            message: e.message,
+        };
+    }
+};
 module.exports = {
     createProductService,
     updateProductService,
@@ -229,4 +244,5 @@ module.exports = {
     deleteProductService,
     getAllProductService,
     deleteManyProductService,
+    getAllType,
 };

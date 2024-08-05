@@ -2,10 +2,10 @@ const UserService = require('../services/UserService');
 const jwtService = require('../services/jwtService');
 const createUser = async (req, res) => {
     try {
-        const { email, password, confirmPassword } = req.body;
+        const { emailSignUp, passwordSignUp, confirmPasswordSignUp } = req.body;
 
         // Kiểm tra dữ liệu đầu vào
-        if (!email || !password || !confirmPassword) {
+        if (!emailSignUp || !passwordSignUp || !confirmPasswordSignUp) {
             return res.status(400).json({
                 status: 'error',
                 message: 'Vui lòng nhập đầy đủ thông tin',
@@ -14,7 +14,7 @@ const createUser = async (req, res) => {
 
         // Kiểm tra định dạng email
         const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-        if (!emailRegex.test(email)) {
+        if (!emailRegex.test(emailSignUp)) {
             return res.status(400).json({
                 status: 'error',
                 message: 'Email không đúng định dạng',
@@ -22,7 +22,7 @@ const createUser = async (req, res) => {
         }
 
         // Kiểm tra mật khẩu
-        if (password !== confirmPassword) {
+        if (passwordSignUp !== confirmPasswordSignUp) {
             return res.status(400).json({
                 status: 'error',
                 message: 'Xác nhận mật khẩu không khớp',
@@ -46,10 +46,9 @@ const createUser = async (req, res) => {
 };
 const loginUser = async (req, res) => {
     try {
-        const { email, password } = req.body;
-
+        const { emailSignIn, passwordSignIn } = req.body;
         //kiểm tra dữ liệu đầu vào
-        if (!email || !password) {
+        if (!emailSignIn || !passwordSignIn) {
             return res.status(400).json({
                 status: 'error',
                 message: 'Vui lòng nhập đầy đủ thông tin',
@@ -58,7 +57,7 @@ const loginUser = async (req, res) => {
 
         //kiểm tra định dạng email
         const reg = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-        const isCheckEmail = reg.test(email);
+        const isCheckEmail = reg.test(emailSignIn);
         if (!isCheckEmail) {
             return res.status(400).json({
                 status: 'error',
@@ -91,8 +90,8 @@ const updateUser = async (req, res) => {
         //lấy tham số được truyền trong URL của request và dữ liệu được truyền trong body của request
         const userId = req.params.id;
         const data = req.body;
-        const { email, name, address, phone, image } = data;
-        if (!email || !name || !address || !phone || !image) {
+        const { email, name, address, phone, image, city } = data;
+        if (!email || !name || !address || !phone || !image || !city) {
             return res.status(400).json({
                 status: 'error',
                 message: 'Vui lòng nhập đầy đủ thông tin',

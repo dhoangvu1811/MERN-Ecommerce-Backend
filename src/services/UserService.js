@@ -2,11 +2,11 @@ const User = require('../models/UserModel');
 const bcrypt = require('bcrypt');
 const { genneralAccessToken, genneralRefreshToken } = require('./jwtService');
 const createUserService = async (newUser) => {
-    const { email, password } = newUser;
+    const { emailSignUp, passwordSignUp } = newUser;
 
     try {
         // Kiểm tra xem email đã tồn tại chưa
-        const checkUser = await User.findOne({ email: email });
+        const checkUser = await User.findOne({ email: emailSignUp });
         if (checkUser !== null) {
             return {
                 status: 'error',
@@ -15,10 +15,13 @@ const createUserService = async (newUser) => {
         }
 
         // Mã hóa mật khẩu
-        const hash = await bcrypt.hashSync(password, 10);
+        const hash = await bcrypt.hashSync(passwordSignUp, 10);
 
         // Tạo người dùng mới
-        const createUser = await User.create({ email, password: hash });
+        const createUser = await User.create({
+            email: emailSignUp,
+            password: hash,
+        });
 
         // Kiểm tra xem người dùng đã được tạo thành công hay chưa
         if (createUser) {
@@ -41,12 +44,12 @@ const createUserService = async (newUser) => {
     }
 };
 const loginUserService = async (userLogin) => {
-    const { email, password } = userLogin;
+    const { emailSignIn, passwordSignIn } = userLogin;
 
     try {
         //kiểm tra xem email đã xác định chưa
         const checkUser = await User.findOne({
-            email: email,
+            email: emailSignIn,
         });
         if (checkUser === null) {
             return {
@@ -57,7 +60,7 @@ const loginUserService = async (userLogin) => {
 
         //so sánh password đã hash với password người dùng nhập vào
         const comparePassword = bcrypt.compareSync(
-            password,
+            passwordSignIn,
             checkUser.password
         );
         if (!comparePassword) {
