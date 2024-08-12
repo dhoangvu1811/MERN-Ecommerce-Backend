@@ -91,7 +91,7 @@ const updateUser = async (req, res) => {
         const userId = req.params.id;
         const data = req.body;
         const { email, name, address, phone, image, city } = data;
-        if (!email || !name || !address || !phone || !image || !city) {
+        if (!name || !address || !phone || !city) {
             return res.status(400).json({
                 status: 'error',
                 message: 'Vui lòng nhập đầy đủ thông tin',
