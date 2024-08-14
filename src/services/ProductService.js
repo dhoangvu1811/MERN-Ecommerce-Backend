@@ -28,12 +28,11 @@ const createProductService = async (newProduct) => {
             name,
             image,
             type,
-            countInStock,
-            price,
+            countInStock: Number(countInStock),
+            price: Number(price),
             rating,
             description,
-            selled,
-            discount,
+            discount: Number(discount),
         });
 
         // trả về thông báo khi tạo sản phẩm thành công

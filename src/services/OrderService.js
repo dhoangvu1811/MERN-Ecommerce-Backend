@@ -1,4 +1,5 @@
 const Order = require('../models/OrderProduct');
+const Product = require('../models/ProductModel');
 
 const createOrderService = async (newOrder) => {
     const {
@@ -13,7 +14,49 @@ const createOrderService = async (newOrder) => {
         user,
     } = newOrder;
     try {
-        // tạo sản phẩm mới
+        // Kiểm tra và cập nhật số lượng sản phẩm
+        const checkStockPromises = orderItems.map(async (item) => {
+            const productData = await Product.findByIdAndUpdate(
+                {
+                    _id: item.product,
+                    countInStock: { $gte: item.amount },
+                },
+                {
+                    $inc: {
+                        countInStock: -item.amount,
+                        selled: +item.amount,
+                    },
+                },
+                { new: true }
+            );
+            if (!productData) {
+                return {
+                    status: 'error',
+                    message: 'Sản phẩm không đủ số lượng',
+                    id: item.product,
+                };
+            }
+            return {
+                status: 'success',
+                id: item.product,
+            };
+        });
+
+        //chờ tất cả các promise hoàn thành và kiểm tra kết quả trả về
+        const results = await Promise.all(checkStockPromises);
+        const failedItems = results.filter((item) => item.status === 'error');
+
+        if (failedItems.length > 0) {
+            return {
+                status: 'error',
+                message: `Sản phẩm với ID ${failedItems
+                    .map((item) => item.id)
+                    .join(', ')} không đủ số lượng`,
+                data: failedItems,
+            };
+        }
+
+        // Nếu tất cả sản phẩm đều có đủ số lượng, tiến hành tạo đơn hàng
         const createOrder = await Order.create({
             orderItems,
             shippingAddress: {
@@ -27,7 +70,7 @@ const createOrderService = async (newOrder) => {
             totalPrice,
             user,
         });
-        // trả về thông báo khi tạo sản phẩm thành công
+
         if (createOrder) {
             return {
                 status: 'success',
@@ -47,6 +90,56 @@ const createOrderService = async (newOrder) => {
         };
     }
 };
+const getAllOrderService = async (id) => {
+    try {
+        //kiểm tra xem đơn hàng có tồn tại không
+        const checkOrder = await Order.find({
+            user: id,
+        });
+        if (checkOrder === null) {
+            return {
+                status: 'error',
+                message: 'Đơn hàng không tồn tại',
+            };
+        }
+        return {
+            status: 'success',
+            message: 'Lấy danh sách đơn hàng thành công',
+            data: checkOrder,
+        };
+    } catch (e) {
+        return {
+            status: 'error',
+            message: e.message,
+        };
+    }
+};
+const getDetailsOrderService = async (id) => {
+    try {
+        //kiểm tra xem đơn hàng có tồn tại không
+        const checkOrder = await Order.findOne({
+            _id: id,
+        });
+        if (checkOrder === null) {
+            return {
+                status: 'error',
+                message: 'Đơn hàng không tồn tại',
+            };
+        }
+        return {
+            status: 'success',
+            message: 'Lấy thông tin đơn hàng thành công',
+            data: checkOrder,
+        };
+    } catch (e) {
+        return {
+            status: 'error',
+            message: e.message,
+        };
+    }
+};
 module.exports = {
     createOrderService,
+    getAllOrderService,
+    getDetailsOrderService,
 };
