@@ -29,7 +29,7 @@ const orderSchema = new mongoose.Schema(
             ref: 'User',
             required: true,
         },
-        ispaid: { type: Boolean, default: true },
+        ispaid: { type: Boolean, default: false },
         paidAt: { type: Date },
         isDelivered: { type: Boolean, default: true },
         deliveredAt: { type: Date },

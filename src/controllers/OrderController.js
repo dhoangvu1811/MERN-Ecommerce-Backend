@@ -87,8 +87,47 @@ const getDetailsOrder = async (req, res) => {
         });
     }
 };
+const cancelOrder = async (req, res) => {
+    try {
+        //lấy tham số được truyền trong URL của request
+        const orderId = req.query.idOrder;
+        if (!orderId) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'orderId là bắt buộc!',
+            });
+        }
+
+        const response = await OrderService.cancelOrderService(orderId);
+        if (response.status === 'error') {
+            return res.status(400).json(response);
+        }
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            status: 'error',
+            message: e,
+        });
+    }
+};
+const getAllOrderAdmin = async (req, res) => {
+    try {
+        const response = await OrderService.getAllOrderAdminService();
+        if (response.status === 'error') {
+            return res.status(400).json(response);
+        }
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(500).json({
+            status: 'error',
+            message: e,
+        });
+    }
+};
 module.exports = {
     createOrder,
     getAllOrder,
     getDetailsOrder,
+    cancelOrder,
+    getAllOrderAdmin,
 };

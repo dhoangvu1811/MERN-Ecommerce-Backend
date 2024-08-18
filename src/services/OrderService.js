@@ -138,8 +138,58 @@ const getDetailsOrderService = async (id) => {
         };
     }
 };
+const cancelOrderService = async (id) => {
+    try {
+        //kiểm tra xem đơn hàng có tồn tại không
+        const checkOrder = await Order.findOne({
+            _id: id,
+        });
+        if (checkOrder === null) {
+            return {
+                status: 'error',
+                message: 'Đơn hàng không tồn tại',
+            };
+        }
+
+        //xóa sản phẩm
+        await Order.findByIdAndDelete(id);
+        return {
+            status: 'success',
+            message: 'Huỷ đơn hàng thành công',
+        };
+    } catch (e) {
+        return {
+            status: 'error',
+            message: e.message,
+        };
+    }
+};
+const getAllOrderAdminService = async (id) => {
+    try {
+        const allOrder = await Order.find();
+        if (allOrder === null) {
+            return {
+                status: 'error',
+                message: 'Không có đơn hàng nào',
+            };
+        }
+        return {
+            status: 'success',
+            message: 'Lấy danh sách đơn hàng thành công',
+            quanlity: allOrder.length,
+            data: allOrder,
+        };
+    } catch (e) {
+        return {
+            status: 'error',
+            message: e.message,
+        };
+    }
+};
 module.exports = {
     createOrderService,
     getAllOrderService,
     getDetailsOrderService,
+    cancelOrderService,
+    getAllOrderAdminService,
 };
