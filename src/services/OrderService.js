@@ -12,6 +12,8 @@ const createOrderService = async (newOrder) => {
         city,
         phone,
         user,
+        ispaid,
+        paidAt,
     } = newOrder;
     try {
         // Kiểm tra và cập nhật số lượng sản phẩm
@@ -19,6 +21,7 @@ const createOrderService = async (newOrder) => {
             const productData = await Product.findByIdAndUpdate(
                 {
                     _id: item.product,
+                    // Kiểm tra số lượng sản phẩm còn trong kho lớn hơn hoặc bằng số lượng sản phẩm được mua trong đơn hàng
                     countInStock: { $gte: item.amount },
                 },
                 {
@@ -69,6 +72,8 @@ const createOrderService = async (newOrder) => {
             shippingPrice,
             totalPrice,
             user,
+            ispaid,
+            paidAt,
         });
 
         if (createOrder) {
@@ -138,8 +143,51 @@ const getDetailsOrderService = async (id) => {
         };
     }
 };
-const cancelOrderService = async (id) => {
+const cancelOrderService = async (id, data) => {
     try {
+        // Kiểm tra và cập nhật số lượng sản phẩm
+        const checkStockPromises = data.map(async (item) => {
+            const productData = await Product.findByIdAndUpdate(
+                {
+                    _id: item.product,
+                    // Kiểm tra số lượng sản phẩm đã bán lớn hơn hoặc bằng số lượng sản phẩm được mua trong đơn hàng
+                    selled: { $gte: item.amount },
+                },
+                {
+                    $inc: {
+                        countInStock: +item.amount,
+                        selled: -item.amount,
+                    },
+                },
+                { new: true }
+            );
+            if (!productData) {
+                return {
+                    status: 'error',
+                    message: 'Sản phẩm không tồn tại',
+                    id: item.product,
+                };
+            }
+            return {
+                status: 'success',
+                id: item.product,
+            };
+        });
+
+        //chờ tất cả các promise hoàn thành và kiểm tra kết quả trả về
+        const results = await Promise.all(checkStockPromises);
+        const failedItems = results.filter((item) => item.status === 'error');
+
+        if (failedItems.length > 0) {
+            return {
+                status: 'error',
+                message: `Sản phẩm với ID ${failedItems
+                    .map((item) => item.id)
+                    .join(', ')} không tồn tại`,
+                data: failedItems,
+            };
+        }
+
         //kiểm tra xem đơn hàng có tồn tại không
         const checkOrder = await Order.findOne({
             _id: id,

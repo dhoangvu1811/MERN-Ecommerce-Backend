@@ -91,6 +91,8 @@ const cancelOrder = async (req, res) => {
     try {
         //lấy tham số được truyền trong URL của request
         const orderId = req.query.idOrder;
+        const data = req.body;
+        // console.log(orderId, req.body[0].amount);
         if (!orderId) {
             return res.status(400).json({
                 status: 'error',
@@ -98,7 +100,7 @@ const cancelOrder = async (req, res) => {
             });
         }
 
-        const response = await OrderService.cancelOrderService(orderId);
+        const response = await OrderService.cancelOrderService(orderId, data);
         if (response.status === 'error') {
             return res.status(400).json(response);
         }
