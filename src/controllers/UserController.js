@@ -76,7 +76,7 @@ const loginUser = async (req, res) => {
         if (response.status === 'error') {
             return res.status(400).json(response);
         }
-        return res.status(200).json(newResponse);
+        return res.status(200).json({ ...newResponse, refresh_token });
     } catch (error) {
         console.error(error);
         return res.status(500).json({
@@ -180,7 +180,7 @@ const refreshToken = async (req, res) => {
     // console.log('req.cookies', req.headers);
     try {
         //lấy token từ header của request và kiểm tra xem token có tồn tại không
-        const token = req.headers.cookie.split('=')[1];
+        let token = req.headers.token.split(' ')[1];
         if (!token) {
             return res.status(400).json({
                 status: 'error',

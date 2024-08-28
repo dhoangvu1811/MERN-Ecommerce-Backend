@@ -1,5 +1,6 @@
 const Order = require('../models/OrderProduct');
 const Product = require('../models/ProductModel');
+const EmailService = require('../services/EmailService');
 
 const createOrderService = async (newOrder) => {
     const {
@@ -14,6 +15,7 @@ const createOrderService = async (newOrder) => {
         user,
         ispaid,
         paidAt,
+        email,
     } = newOrder;
     try {
         // Kiểm tra và cập nhật số lượng sản phẩm
@@ -44,11 +46,9 @@ const createOrderService = async (newOrder) => {
                 id: item.product,
             };
         });
-
         //chờ tất cả các promise hoàn thành và kiểm tra kết quả trả về
         const results = await Promise.all(checkStockPromises);
         const failedItems = results.filter((item) => item.status === 'error');
-
         if (failedItems.length > 0) {
             return {
                 status: 'error',
@@ -58,7 +58,6 @@ const createOrderService = async (newOrder) => {
                 data: failedItems,
             };
         }
-
         // Nếu tất cả sản phẩm đều có đủ số lượng, tiến hành tạo đơn hàng
         const createOrder = await Order.create({
             orderItems,
@@ -75,8 +74,8 @@ const createOrderService = async (newOrder) => {
             ispaid,
             paidAt,
         });
-
         if (createOrder) {
+            await EmailService.sendEmailCreateOrder(email, orderItems);
             return {
                 status: 'success',
                 message: 'Thanh toán thành công',
