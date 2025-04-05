@@ -1,4 +1,4 @@
-# Dự án MERN Backend
+# Dự án MERN-Ecommerce-Backend
 
 ## Tổng quan
 
@@ -25,7 +25,7 @@
 
    ```bash
    git clone <repository-url>
-   cd projectMERN-backend
+   cd MERN-Ecommerce-Backend
    ```
 
 2. Cài đặt các phụ thuộc:
